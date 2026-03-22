@@ -11,6 +11,15 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("/home/joao/.android/assistivetouch-release.jks")
+            storePassword = "JzsSauhmeQWOt8wAgncADn4gClQ"
+            keyAlias = "assistivetouch-key"
+            keyPassword = "JzsSauhmeQWOt8wAgncADn4gClQ"
+        }
+    }
+
     defaultConfig {
         applicationId = "com.joaohouto.assistivemenutool"
         minSdk = 24
@@ -25,7 +34,7 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
