@@ -325,8 +325,8 @@ private fun PermissionRow(label: String, granted: Boolean, onRequest: () -> Unit
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     painter = painterResource(
-                        if (granted) android.R.drawable.checkbox_on_background
-                        else android.R.drawable.checkbox_off_background
+                        if (granted) R.drawable.ic_check_circle
+                        else R.drawable.ic_circle_outline
                     ),
                     contentDescription = null,
                     modifier = Modifier.size(20.dp),
