@@ -14,12 +14,19 @@ import android.os.IBinder
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.WindowManager
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.app.NotificationCompat
 
 class FloatingButtonService : Service() {
+
+    // ── State ────────────────────────────────────────────────────────────────
 
     private lateinit var windowManager: WindowManager
     private lateinit var floatingView: View
@@ -30,6 +37,10 @@ class FloatingButtonService : Service() {
     private var initialTouchX = 0f
     private var initialTouchY = 0f
     private var isDragging = false
+
+    private var menuOverlayView: View? = null
+
+    // ── Lifecycle ────────────────────────────────────────────────────────────
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -49,21 +60,19 @@ class FloatingButtonService : Service() {
 
     override fun onDestroy() {
         isRunning = false
-        if (::floatingView.isInitialized) {
-            windowManager.removeView(floatingView)
-        }
+        dismissMenuImmediate()
+        if (::floatingView.isInitialized) windowManager.removeView(floatingView)
         super.onDestroy()
     }
 
-    // ── Floating button setup ────────────────────────────────────────────────
+    // ── Floating button ──────────────────────────────────────────────────────
 
     private fun addFloatingButton() {
         val sizePx = dpToPx(BUTTON_SIZE_DP)
         floatingView = buildButtonView(sizePx)
 
         params = WindowManager.LayoutParams(
-            sizePx,
-            sizePx,
+            sizePx, sizePx,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
             PixelFormat.TRANSLUCENT
@@ -80,19 +89,17 @@ class FloatingButtonService : Service() {
     private fun buildButtonView(sizePx: Int): View {
         val outerBg = GradientDrawable().apply {
             shape = GradientDrawable.OVAL
-            setColor(Color.argb(204, 20, 20, 20))  // ~80% opaque dark
+            setColor(Color.argb(204, 20, 20, 20))
         }
-
-        val innerSizePx = (sizePx * 0.52f).toInt()
         val innerBg = GradientDrawable().apply {
             shape = GradientDrawable.OVAL
             setColor(Color.WHITE)
         }
+        val innerSizePx = (sizePx * 0.52f).toInt()
         val innerView = View(this).apply {
             background = innerBg
             layoutParams = FrameLayout.LayoutParams(innerSizePx, innerSizePx, Gravity.CENTER)
         }
-
         return FrameLayout(this).apply {
             background = outerBg
             elevation = dpToPx(6).toFloat()
@@ -132,20 +139,12 @@ class FloatingButtonService : Service() {
         return true
     }
 
-    private fun onButtonClick() {
-        // TODO — Etapa 2: expandable menu
-    }
-
-    // ── Edge snap animation ──────────────────────────────────────────────────
-
     private fun snapToEdge() {
         val screenWidth = resources.displayMetrics.widthPixels
         val screenHeight = resources.displayMetrics.heightPixels
         val sizePx = dpToPx(BUTTON_SIZE_DP)
-
         val targetX = if (params.x + sizePx / 2 < screenWidth / 2) 0 else screenWidth - sizePx
         val targetY = params.y.coerceIn(0, screenHeight - sizePx)
-
         val startX = params.x
         val startY = params.y
 
@@ -161,6 +160,187 @@ class FloatingButtonService : Service() {
             start()
         }
     }
+
+    // ── Menu ─────────────────────────────────────────────────────────────────
+
+    private fun onButtonClick() {
+        if (menuOverlayView != null) hideMenu() else showMenu()
+    }
+
+    private fun showMenu() {
+        val overlay = buildMenuOverlay()
+        val overlayParams = WindowManager.LayoutParams(
+            MATCH_PARENT, MATCH_PARENT,
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+            PixelFormat.TRANSLUCENT
+        )
+        windowManager.addView(overlay, overlayParams)
+        menuOverlayView = overlay
+
+        val frame = overlay as FrameLayout
+        val dim = frame.getChildAt(0)
+        val panel = frame.getChildAt(1)
+
+        dim.alpha = 0f
+        dim.animate().alpha(1f).setDuration(MENU_ANIM_SHOW_MS).start()
+
+        panel.scaleX = 0.75f
+        panel.scaleY = 0.75f
+        panel.alpha = 0f
+        panel.animate()
+            .scaleX(1f).scaleY(1f).alpha(1f)
+            .setDuration(MENU_ANIM_SHOW_MS)
+            .setInterpolator(DecelerateInterpolator())
+            .start()
+    }
+
+    private fun hideMenu() {
+        val overlay = menuOverlayView ?: return
+        val frame = overlay as FrameLayout
+        val dim = frame.getChildAt(0)
+        val panel = frame.getChildAt(1)
+
+        panel.animate()
+            .scaleX(0.75f).scaleY(0.75f).alpha(0f)
+            .setDuration(MENU_ANIM_HIDE_MS)
+            .start()
+        dim.animate()
+            .alpha(0f)
+            .setDuration(MENU_ANIM_HIDE_MS)
+            .withEndAction {
+                try { windowManager.removeView(overlay) } catch (_: Exception) {}
+                menuOverlayView = null
+            }
+            .start()
+    }
+
+    private fun dismissMenuImmediate() {
+        menuOverlayView?.let {
+            try { windowManager.removeView(it) } catch (_: Exception) {}
+            menuOverlayView = null
+        }
+    }
+
+    private fun buildMenuOverlay(): FrameLayout {
+        val overlay = FrameLayout(this)
+
+        // Semi-transparent dim layer — tap outside to close
+        val dim = View(this).apply {
+            setBackgroundColor(Color.argb(110, 0, 0, 0))
+            setOnClickListener { hideMenu() }
+            layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
+        }
+
+        // Menu panel — intercepts clicks so they don't reach the dim
+        val panel = buildMenuPanel()
+        val panelParams = FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT, Gravity.CENTER)
+        panelParams.setMargins(dpToPx(32), 0, dpToPx(32), 0)
+        panel.layoutParams = panelParams
+        panel.setOnClickListener { /* consume */ }
+
+        overlay.addView(dim)
+        overlay.addView(panel)
+        return overlay
+    }
+
+    private fun buildMenuPanel(): LinearLayout {
+        val items = listOf(
+            MenuItem(R.drawable.ic_home,    R.string.action_home,    MenuAction.HOME),
+            MenuItem(R.drawable.ic_back,    R.string.action_back,    MenuAction.BACK),
+            MenuItem(R.drawable.ic_recents, R.string.action_recents, MenuAction.RECENTS),
+            MenuItem(R.drawable.ic_lock,    R.string.action_lock,    MenuAction.LOCK),
+        )
+
+        val bg = GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = dpToPx(20).toFloat()
+            setColor(Color.argb(235, 28, 28, 30))
+        }
+
+        return LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            background = bg
+            val p = dpToPx(12)
+            setPadding(p, p, p, p)
+
+            // 2 items per row
+            items.chunked(2).forEach { rowItems ->
+                addView(LinearLayout(context).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    rowItems.forEach { addView(buildMenuItem(it)) }
+                })
+            }
+        }
+    }
+
+    private fun buildMenuItem(item: MenuItem): View {
+        val containerSize = dpToPx(MENU_ITEM_SIZE_DP)
+        val iconSize = dpToPx(46)
+        val iconPad = dpToPx(11)
+
+        val iconBg = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(Color.argb(75, 255, 255, 255))
+        }
+
+        val icon = ImageView(this).apply {
+            setImageResource(item.iconRes)
+            setColorFilter(Color.WHITE)
+            background = iconBg
+            scaleType = ImageView.ScaleType.CENTER_INSIDE
+            setPadding(iconPad, iconPad, iconPad, iconPad)
+            layoutParams = LinearLayout.LayoutParams(iconSize, iconSize).apply {
+                gravity = Gravity.CENTER_HORIZONTAL
+            }
+        }
+
+        val label = TextView(this).apply {
+            text = getString(item.labelRes)
+            textSize = 10f
+            setTextColor(Color.WHITE)
+            gravity = Gravity.CENTER
+            maxLines = 1
+            layoutParams = LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply {
+                gravity = Gravity.CENTER_HORIZONTAL
+                topMargin = dpToPx(5)
+            }
+        }
+
+        return LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(containerSize, containerSize)
+            addView(icon)
+            addView(label)
+            setOnClickListener {
+                animate().scaleX(0.88f).scaleY(0.88f).setDuration(70).withEndAction {
+                    animate().scaleX(1f).scaleY(1f).setDuration(70).start()
+                }.start()
+                onMenuAction(item.action)
+            }
+        }
+    }
+
+    private fun onMenuAction(action: MenuAction) {
+        hideMenu()
+        when (action) {
+            MenuAction.HOME -> Unit    // Etapa 3
+            MenuAction.BACK -> Unit    // Etapa 3
+            MenuAction.RECENTS -> Unit // Etapa 3
+            MenuAction.LOCK -> Unit    // Etapa 3
+        }
+    }
+
+    // ── Data types ───────────────────────────────────────────────────────────
+
+    enum class MenuAction { HOME, BACK, RECENTS, LOCK }
+
+    private data class MenuItem(
+        val iconRes: Int,
+        val labelRes: Int,
+        val action: MenuAction
+    )
 
     // ── Notification ─────────────────────────────────────────────────────────
 
@@ -207,7 +387,10 @@ class FloatingButtonService : Service() {
         private const val NOTIFICATION_ID = 1001
         private const val CHANNEL_ID = "assistive_touch"
         private const val BUTTON_SIZE_DP = 56
+        private const val MENU_ITEM_SIZE_DP = 90
         private const val DRAG_THRESHOLD = 8
         private const val SNAP_DURATION_MS = 260L
+        private const val MENU_ANIM_SHOW_MS = 200L
+        private const val MENU_ANIM_HIDE_MS = 150L
     }
 }

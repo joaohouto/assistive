@@ -3,4 +3,8 @@
     <string name="notification_title">AssistiveTouch</string>
     <string name="notification_text">Toque para acessar ações rápidas</string>
     <string name="action_stop">Parar</string>
+    <string name="action_home">Início</string>
+    <string name="action_back">Voltar</string>
+    <string name="action_recents">Recentes</string>
+    <string name="action_lock">Bloquear</string>
 </resources>
