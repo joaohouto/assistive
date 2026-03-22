@@ -125,7 +125,7 @@ Abra o projeto no Android Studio e clique em **Run**.
 ```
 MIT License
 
-Copyright (c) 2026 João Houto
+Copyright (c) 2026 João Couto
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
