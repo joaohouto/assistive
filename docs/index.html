@@ -3,7 +3,51 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Assistive Menu Tool</title>
+    <title>
+      Assistive Menu Tool — Botão flutuante de acessibilidade para Android
+    </title>
+    <meta
+      name="description"
+      content="Botão flutuante de acessibilidade para Android. Acesse Home, Voltar, Recentes, Screenshot e muito mais com um toque, de qualquer tela. Gratuito e de código aberto."
+    />
+    <meta
+      name="keywords"
+      content="assistive touch android, botão flutuante android, acessibilidade android, assistive menu, floating button android"
+    />
+    <meta name="author" content="João Couto" />
+    <link rel="canonical" href="https://joaohouto.github.io/assistive/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://joaohouto.github.io/assistive/" />
+    <meta
+      property="og:title"
+      content="Assistive Menu Tool — Botão flutuante de acessibilidade para Android"
+    />
+    <meta
+      property="og:description"
+      content="Botão flutuante de acessibilidade para Android. Acesse Home, Voltar, Recentes, Screenshot e muito mais com um toque, de qualquer tela. Gratuito e de código aberto."
+    />
+    <meta
+      property="og:image"
+      content="https://joaohouto.github.io/assistive/Screenshot_20260322_145022_Assistive Menu Tool.jpg"
+    />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Assistive Menu Tool — Botão flutuante de acessibilidade para Android"
+    />
+    <meta
+      name="twitter:description"
+      content="Botão flutuante de acessibilidade para Android. Acesse Home, Voltar, Recentes, Screenshot e muito mais com um toque, de qualquer tela."
+    />
+    <meta
+      name="twitter:image"
+      content="https://joaohouto.github.io/assistive/Screenshot_20260322_145022_Assistive Menu Tool.jpg"
+    />
+
     <style>
       *,
       *::before,
@@ -172,6 +216,109 @@
         line-height: 1.5;
       }
 
+      /* ── Install Guide ── */
+      .install-guide {
+        width: 100%;
+        max-width: 720px;
+        padding: 24px 24px 80px;
+      }
+
+      .install-guide h2 {
+        font-size: clamp(26px, 4vw, 36px);
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        margin-bottom: 8px;
+      }
+
+      .install-guide .section-desc {
+        font-size: 14px;
+        color: var(--muted);
+        line-height: 1.6;
+        margin-bottom: 32px;
+      }
+
+      .step-group {
+        margin-bottom: 32px;
+      }
+
+      .step-group-title {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .step {
+        display: flex;
+        gap: 16px;
+        padding: 16px 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .step:last-child {
+        border-bottom: none;
+      }
+
+      .step-num {
+        flex-shrink: 0;
+        width: 28px;
+        height: 28px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+
+      .step-body h4 {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      .step-body p {
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .step-body .path {
+        display: inline-block;
+        margin-top: 6px;
+        font-size: 12px;
+        font-family: ui-monospace, "SF Mono", monospace;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 4px 8px;
+        color: var(--text);
+      }
+
+      .callout {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-left: 3px solid #888;
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-top: 16px;
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .callout strong {
+        color: var(--text);
+      }
+
       /* ── Footer ── */
       footer {
         border-top: 1px solid var(--border);
@@ -205,24 +352,19 @@
         com um toque, de qualquer tela.
       </p>
 
-      <a
-        class="btn-download"
-        id="btn-download"
-        href="https://github.com/joaohouto/assistive/releases/latest"
-      >
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 4v-2h14v2H5z" />
-        </svg>
-        Download APK
-      </a>
-
-      <p class="version-badge" id="version-badge">
-        <a
-          href="https://github.com/joaohouto/assistive/releases"
-          target="_blank"
-          >ver todas as versões</a
+      <a class="btn-download" href="#como-instalar">
+        <svg
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          style="width: 18px; height: 18px"
         >
-      </p>
+          <path
+            d="M12 4a1 1 0 0 1 1 1v9.586l2.293-2.293a1 1 0 1 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4a1 1 0 1 1 1.414-1.414L11 14.586V5a1 1 0 0 1 1-1z"
+          />
+          <path d="M5 19a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1z" />
+        </svg>
+        Fazer o download (.apk)
+      </a>
     </section>
 
     <div class="divider"></div>
@@ -273,6 +415,197 @@
           (API 24).
         </p>
       </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="install-guide" id="como-instalar">
+      <h2>Como instalar</h2>
+      <p class="section-desc">
+        O app é distribuído como APK fora da Play Store. Isso exige dois passos
+        extras de configuração — ambos são reversíveis e não afetam a segurança
+        do seu dispositivo a longo prazo.
+      </p>
+
+      <div style="text-align: center; padding-bottom: 32px">
+        <a
+          class="btn-download"
+          id="btn-download"
+          href="https://github.com/joaohouto/assistive/releases/latest"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            style="width: 18px; height: 18px"
+          >
+            <path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 4v-2h14v2H5z" />
+          </svg>
+          Download APK
+        </a>
+        <p class="version-badge" id="version-badge" style="margin-top: 12px">
+          <a
+            href="https://github.com/joaohouto/assistive/releases"
+            target="_blank"
+            >ver todas as versões</a
+          >
+        </p>
+      </div>
+
+      <div class="step-group">
+        <p class="step-group-title">
+          Passo 1 — Desativar o Play Protect temporariamente
+        </p>
+
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Abra o Google Play Store</h4>
+            <p>
+              Toque na sua foto de perfil (canto superior direito) e acesse
+              <strong>Play Protect</strong>.
+            </p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Desative a verificação de apps</h4>
+            <p>
+              Toque no ícone de engrenagem (⚙) e desative
+              <strong>"Verificar apps com o Play Protect"</strong>.
+            </p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Instale o APK normalmente</h4>
+            <p>
+              Baixe o APK, abra o arquivo e confirme a instalação. Após
+              instalar, você pode reativar o Play Protect.
+            </p>
+          </div>
+        </div>
+
+        <div class="callout">
+          <strong>Por que o Play Protect bloqueia?</strong> O Google classifica
+          como suspeito qualquer APK que não passou pela revisão da Play Store.
+          Isso é uma proteção legítima contra malware — mas também impede apps
+          de código aberto distribuídos diretamente. O Assistive Menu Tool tem
+          <a
+            href="https://github.com/joaohouto/assistive"
+            target="_blank"
+            style="color: var(--text)"
+            >código 100% aberto no GitHub</a
+          >
+          e não coleta nenhum dado.
+        </div>
+      </div>
+
+      <div class="step-group">
+        <p class="step-group-title">
+          Passo 2 — Habilitar "Instalar apps desconhecidos"
+        </p>
+
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Acesse as configurações do Android</h4>
+            <p>
+              Vá em <strong>Configurações → Aplicativos</strong> e encontre o
+              app que você usará para abrir o APK (geralmente
+              <em>Arquivos</em> ou <em>Chrome</em>).
+            </p>
+            <span class="path"
+              >Configurações → Aplicativos → [Gerenciador de arquivos] →
+              Instalar apps desconhecidos</span
+            >
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Permita a instalação</h4>
+            <p>
+              Ative a opção <strong>"Permitir desta fonte"</strong>. Você pode
+              desativar novamente após a instalação.
+            </p>
+          </div>
+        </div>
+
+        <div class="callout">
+          <strong>Por que essa permissão existe?</strong> O Android bloqueia por
+          padrão a instalação de apps fora da loja oficial como medida de
+          segurança. Ao liberar somente para o app de arquivos (e não para o
+          sistema todo), você mantém o controle de qual fonte pode instalar
+          apps.
+        </div>
+      </div>
+
+      <div class="step-group">
+        <p class="step-group-title">
+          Passo 3 — Conceder permissões ao Assistive Menu Tool
+        </p>
+
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Permissão de sobreposição</h4>
+            <p>
+              Ao abrir o app pela primeira vez, ele pedirá para
+              <strong>"Aparecer sobre outros apps"</strong>. Essa permissão é
+              obrigatória para que o botão flutuante fique visível em cima de
+              outras telas.
+            </p>
+            <span class="path"
+              >Configurações → Aplicativos → Assistive Menu Tool → Aparecer
+              sobre outros apps</span
+            >
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Permissões restritas (Android 13+)</h4>
+            <p>
+              No Android 13 e acima, apps instalados fora da Play Store recebem
+              automaticamente um conjunto reduzido de permissões. Para que o
+              botão funcione como ferramenta de acessibilidade completa, é
+              necessário remover essa restrição manualmente.
+            </p>
+            <span class="path"
+              >Configurações → Aplicativos → Assistive Menu Tool → (⋮) [três
+              pontinhos] → Permitir configurações restritas</span
+            >
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Ative o app e pronto</h4>
+            <p>
+              De volta ao Assistive Menu Tool, toque em <strong>Ligar</strong>.
+              O botão flutuante aparecerá na tela e ficará ativo mesmo ao trocar
+              de app.
+            </p>
+          </div>
+        </div>
+
+        <div class="callout">
+          <strong>Por que permissões restritas?</strong> A partir do Android 13,
+          o sistema limita automaticamente as permissões de apps instalados fora
+          da Play Store — mesmo que o app as declare no manifesto. Isso impede
+          que apps maliciosos obtenham acesso amplo sem revisão. Liberar
+          manualmente as permissões restritas para este app específico autoriza
+          apenas ele, sem afetar o restante do sistema.
+        </div>
+      </div>
+
     </section>
 
     <footer>

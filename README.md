@@ -4,6 +4,14 @@ Botão flutuante de acessibilidade para Android. Exibe um botão arrastável sob
 
 ---
 
+<p align="center">
+  <a href="https://joaohouto.github.io/assistive/">
+    <img src="https://img.shields.io/badge/Site%20%26%20Guia%20de%20Instala%C3%A7%C3%A3o-→-black?style=for-the-badge" alt="Site & Guia de Instalação" />
+  </a>
+</p>
+
+---
+
 ## Funcionalidades
 
 - **Botão flutuante** arrastável por toda a tela
