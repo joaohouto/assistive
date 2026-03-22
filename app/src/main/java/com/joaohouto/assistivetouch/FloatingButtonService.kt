@@ -7,9 +7,11 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.PixelFormat
 import android.graphics.drawable.GradientDrawable
+import android.media.AudioManager
 import android.os.IBinder
 import android.view.Gravity
 import android.view.MotionEvent
@@ -31,14 +33,21 @@ class FloatingButtonService : Service() {
     private lateinit var windowManager: WindowManager
     private lateinit var floatingView: View
     private lateinit var params: WindowManager.LayoutParams
+    private lateinit var settings: SettingsRepository
 
     private var initialX = 0
     private var initialY = 0
     private var initialTouchX = 0f
     private var initialTouchY = 0f
     private var isDragging = false
-
     private var menuOverlayView: View? = null
+
+    private val prefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+        when (key) {
+            SettingsRepository.KEY_OPACITY     -> floatingView.alpha = settings.opacity
+            SettingsRepository.KEY_BUTTON_SIZE -> rebuildButton()
+        }
+    }
 
     // ── Lifecycle ────────────────────────────────────────────────────────────
 
@@ -47,10 +56,12 @@ class FloatingButtonService : Service() {
     override fun onCreate() {
         super.onCreate()
         isRunning = true
+        settings = SettingsRepository(this)
+        settings.prefs.registerOnSharedPreferenceChangeListener(prefsListener)
         createNotificationChannel()
         startForeground(NOTIFICATION_ID, buildNotification())
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
-        addFloatingButton()
+        rebuildButton()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -60,6 +71,7 @@ class FloatingButtonService : Service() {
 
     override fun onDestroy() {
         isRunning = false
+        settings.prefs.unregisterOnSharedPreferenceChangeListener(prefsListener)
         dismissMenuImmediate()
         if (::floatingView.isInitialized) windowManager.removeView(floatingView)
         super.onDestroy()
@@ -67,8 +79,16 @@ class FloatingButtonService : Service() {
 
     // ── Floating button ──────────────────────────────────────────────────────
 
-    private fun addFloatingButton() {
-        val sizePx = dpToPx(BUTTON_SIZE_DP)
+    private fun rebuildButton() {
+        val savedX = if (::params.isInitialized) params.x else 0
+        val savedY = if (::params.isInitialized) params.y else dpToPx(200)
+
+        if (::floatingView.isInitialized) {
+            floatingView.setOnTouchListener(null)
+            windowManager.removeView(floatingView)
+        }
+
+        val sizePx = dpToPx(settings.buttonSizeDp)
         floatingView = buildButtonView(sizePx)
 
         params = WindowManager.LayoutParams(
@@ -78,11 +98,12 @@ class FloatingButtonService : Service() {
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.TOP or Gravity.START
-            x = 0
-            y = dpToPx(200)
+            x = savedX
+            y = savedY
         }
 
         windowManager.addView(floatingView, params)
+        floatingView.alpha = settings.opacity
         floatingView.setOnTouchListener(::onTouch)
     }
 
@@ -142,7 +163,7 @@ class FloatingButtonService : Service() {
     private fun snapToEdge() {
         val screenWidth = resources.displayMetrics.widthPixels
         val screenHeight = resources.displayMetrics.heightPixels
-        val sizePx = dpToPx(BUTTON_SIZE_DP)
+        val sizePx = dpToPx(settings.buttonSizeDp)
         val targetX = if (params.x + sizePx / 2 < screenWidth / 2) 0 else screenWidth - sizePx
         val targetY = params.y.coerceIn(0, screenHeight - sizePx)
         val startX = params.x
@@ -169,50 +190,34 @@ class FloatingButtonService : Service() {
 
     private fun showMenu() {
         val overlay = buildMenuOverlay()
-        val overlayParams = WindowManager.LayoutParams(
+        windowManager.addView(overlay, WindowManager.LayoutParams(
             MATCH_PARENT, MATCH_PARENT,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
             PixelFormat.TRANSLUCENT
-        )
-        windowManager.addView(overlay, overlayParams)
+        ))
         menuOverlayView = overlay
 
         val frame = overlay as FrameLayout
-        val dim = frame.getChildAt(0)
-        val panel = frame.getChildAt(1)
-
-        dim.alpha = 0f
-        dim.animate().alpha(1f).setDuration(MENU_ANIM_SHOW_MS).start()
-
-        panel.scaleX = 0.75f
-        panel.scaleY = 0.75f
-        panel.alpha = 0f
-        panel.animate()
-            .scaleX(1f).scaleY(1f).alpha(1f)
-            .setDuration(MENU_ANIM_SHOW_MS)
-            .setInterpolator(DecelerateInterpolator())
-            .start()
+        frame.getChildAt(0).also { it.alpha = 0f; it.animate().alpha(1f).setDuration(MENU_SHOW_MS).start() }
+        frame.getChildAt(1).also {
+            it.scaleX = 0.75f; it.scaleY = 0.75f; it.alpha = 0f
+            it.animate().scaleX(1f).scaleY(1f).alpha(1f)
+                .setDuration(MENU_SHOW_MS).setInterpolator(DecelerateInterpolator()).start()
+        }
     }
 
     private fun hideMenu() {
         val overlay = menuOverlayView ?: return
         val frame = overlay as FrameLayout
-        val dim = frame.getChildAt(0)
-        val panel = frame.getChildAt(1)
-
-        panel.animate()
-            .scaleX(0.75f).scaleY(0.75f).alpha(0f)
-            .setDuration(MENU_ANIM_HIDE_MS)
-            .start()
-        dim.animate()
-            .alpha(0f)
-            .setDuration(MENU_ANIM_HIDE_MS)
+        frame.getChildAt(1).animate()
+            .scaleX(0.75f).scaleY(0.75f).alpha(0f).setDuration(MENU_HIDE_MS).start()
+        frame.getChildAt(0).animate()
+            .alpha(0f).setDuration(MENU_HIDE_MS)
             .withEndAction {
                 try { windowManager.removeView(overlay) } catch (_: Exception) {}
                 menuOverlayView = null
-            }
-            .start()
+            }.start()
     }
 
     private fun dismissMenuImmediate() {
@@ -225,18 +230,15 @@ class FloatingButtonService : Service() {
     private fun buildMenuOverlay(): FrameLayout {
         val overlay = FrameLayout(this)
 
-        // Semi-transparent dim layer — tap outside to close
         val dim = View(this).apply {
             setBackgroundColor(Color.argb(110, 0, 0, 0))
             setOnClickListener { hideMenu() }
             layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
         }
 
-        // Menu panel — intercepts clicks so they don't reach the dim
         val panel = buildMenuPanel()
-        val panelParams = FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT, Gravity.CENTER)
-        panelParams.setMargins(dpToPx(32), 0, dpToPx(32), 0)
-        panel.layoutParams = panelParams
+        panel.layoutParams = FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT, Gravity.CENTER)
+            .also { it.setMargins(dpToPx(32), 0, dpToPx(32), 0) }
         panel.setOnClickListener { /* consume */ }
 
         overlay.addView(dim)
@@ -245,36 +247,27 @@ class FloatingButtonService : Service() {
     }
 
     private fun buildMenuPanel(): LinearLayout {
-        val items = listOf(
-            MenuItem(R.drawable.ic_home,    R.string.action_home,    MenuAction.HOME),
-            MenuItem(R.drawable.ic_back,    R.string.action_back,    MenuAction.BACK),
-            MenuItem(R.drawable.ic_recents, R.string.action_recents, MenuAction.RECENTS),
-            MenuItem(R.drawable.ic_lock,    R.string.action_lock,    MenuAction.LOCK),
-        )
-
+        val actions = settings.menuActions.ifEmpty { SettingsRepository.DEFAULT_ACTIONS }
         val bg = GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
             cornerRadius = dpToPx(20).toFloat()
             setColor(Color.argb(235, 28, 28, 30))
         }
-
         return LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             background = bg
             val p = dpToPx(12)
             setPadding(p, p, p, p)
-
-            // 2 items per row
-            items.chunked(2).forEach { rowItems ->
+            actions.chunked(2).forEach { row ->
                 addView(LinearLayout(context).apply {
                     orientation = LinearLayout.HORIZONTAL
-                    rowItems.forEach { addView(buildMenuItem(it)) }
+                    row.forEach { addView(buildMenuItem(it)) }
                 })
             }
         }
     }
 
-    private fun buildMenuItem(item: MenuItem): View {
+    private fun buildMenuItem(action: MenuAction): View {
         val containerSize = dpToPx(MENU_ITEM_SIZE_DP)
         val iconSize = dpToPx(46)
         val iconPad = dpToPx(11)
@@ -283,30 +276,24 @@ class FloatingButtonService : Service() {
             shape = GradientDrawable.OVAL
             setColor(Color.argb(75, 255, 255, 255))
         }
-
         val icon = ImageView(this).apply {
-            setImageResource(item.iconRes)
+            setImageResource(action.iconRes())
             setColorFilter(Color.WHITE)
             background = iconBg
             scaleType = ImageView.ScaleType.CENTER_INSIDE
             setPadding(iconPad, iconPad, iconPad, iconPad)
-            layoutParams = LinearLayout.LayoutParams(iconSize, iconSize).apply {
-                gravity = Gravity.CENTER_HORIZONTAL
-            }
+            layoutParams = LinearLayout.LayoutParams(iconSize, iconSize)
+                .also { it.gravity = Gravity.CENTER_HORIZONTAL }
         }
-
         val label = TextView(this).apply {
-            text = getString(item.labelRes)
+            text = getString(action.labelRes())
             textSize = 10f
             setTextColor(Color.WHITE)
             gravity = Gravity.CENTER
             maxLines = 1
-            layoutParams = LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply {
-                gravity = Gravity.CENTER_HORIZONTAL
-                topMargin = dpToPx(5)
-            }
+            layoutParams = LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
+                .also { it.gravity = Gravity.CENTER_HORIZONTAL; it.topMargin = dpToPx(5) }
         }
-
         return LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
@@ -317,42 +304,37 @@ class FloatingButtonService : Service() {
                 animate().scaleX(0.88f).scaleY(0.88f).setDuration(70).withEndAction {
                     animate().scaleX(1f).scaleY(1f).setDuration(70).start()
                 }.start()
-                onMenuAction(item.action)
+                onMenuAction(action)
             }
         }
     }
 
     private fun onMenuAction(action: MenuAction) {
         hideMenu()
-        AssistiveTouchAccessibilityService.instance?.execute(action)
+        when (action) {
+            MenuAction.VOLUME_UP -> adjustVolume(AudioManager.ADJUST_RAISE)
+            MenuAction.VOLUME_DOWN -> adjustVolume(AudioManager.ADJUST_LOWER)
+            else -> AssistiveTouchAccessibilityService.instance?.execute(action)
+        }
     }
 
-    // ── Data types ───────────────────────────────────────────────────────────
-
-    enum class MenuAction { HOME, BACK, RECENTS, LOCK }
-
-    private data class MenuItem(
-        val iconRes: Int,
-        val labelRes: Int,
-        val action: MenuAction
-    )
+    private fun adjustVolume(direction: Int) {
+        val audio = getSystemService(AUDIO_SERVICE) as AudioManager
+        audio.adjustVolume(direction, AudioManager.FLAG_SHOW_UI)
+    }
 
     // ── Notification ─────────────────────────────────────────────────────────
 
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
-            CHANNEL_ID,
-            getString(R.string.app_name),
-            NotificationManager.IMPORTANCE_LOW
+            CHANNEL_ID, getString(R.string.app_name), NotificationManager.IMPORTANCE_LOW
         )
         getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
     }
 
     private fun buildNotification(): Notification {
         val openIntent = PendingIntent.getActivity(
-            this, 0,
-            Intent(this, MainActivity::class.java),
-            PendingIntent.FLAG_IMMUTABLE
+            this, 0, Intent(this, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE
         )
         val stopIntent = PendingIntent.getService(
             this, 1,
@@ -379,13 +361,12 @@ class FloatingButtonService : Service() {
 
         const val ACTION_STOP = "com.joaohouto.assistivetouch.STOP"
 
-        private const val NOTIFICATION_ID = 1001
-        private const val CHANNEL_ID = "assistive_touch"
-        private const val BUTTON_SIZE_DP = 56
+        private const val NOTIFICATION_ID   = 1001
+        private const val CHANNEL_ID        = "assistive_touch"
         private const val MENU_ITEM_SIZE_DP = 90
-        private const val DRAG_THRESHOLD = 8
-        private const val SNAP_DURATION_MS = 260L
-        private const val MENU_ANIM_SHOW_MS = 200L
-        private const val MENU_ANIM_HIDE_MS = 150L
+        private const val DRAG_THRESHOLD    = 8
+        private const val SNAP_DURATION_MS  = 260L
+        private const val MENU_SHOW_MS      = 200L
+        private const val MENU_HIDE_MS      = 150L
     }
 }

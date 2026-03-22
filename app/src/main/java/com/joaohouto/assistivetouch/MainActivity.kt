@@ -7,6 +7,7 @@ import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,37 +17,50 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.joaohouto.assistivetouch.ui.theme.AssistiveTouchTheme
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
 
+    private lateinit var settings: SettingsRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        settings = SettingsRepository(this)
         enableEdgeToEdge()
         setContent {
             AssistiveTouchTheme {
                 MainScreen(
+                    settings = settings,
                     hasOverlayPermission = { Settings.canDrawOverlays(this) },
                     hasAccessibilityService = { isAccessibilityServiceEnabled() },
                     requestOverlayPermission = {
@@ -62,11 +76,9 @@ class MainActivity : ComponentActivity() {
                     },
                     isServiceRunning = { FloatingButtonService.isRunning },
                     toggleService = {
-                        if (FloatingButtonService.isRunning) {
-                            stopService(Intent(this, FloatingButtonService::class.java))
-                        } else {
-                            startForegroundService(Intent(this, FloatingButtonService::class.java))
-                        }
+                        val svc = Intent(this, FloatingButtonService::class.java)
+                        if (FloatingButtonService.isRunning) stopService(svc)
+                        else startForegroundService(svc)
                     }
                 )
             }
@@ -82,8 +94,11 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+// ── Main screen ───────────────────────────────────────────────────────────────
+
 @Composable
 private fun MainScreen(
+    settings: SettingsRepository,
     hasOverlayPermission: () -> Boolean,
     hasAccessibilityService: () -> Boolean,
     requestOverlayPermission: () -> Unit,
@@ -91,15 +106,15 @@ private fun MainScreen(
     isServiceRunning: () -> Boolean,
     toggleService: () -> Unit
 ) {
-    var overlayGranted by remember { mutableStateOf(hasOverlayPermission()) }
+    var overlayGranted       by remember { mutableStateOf(hasOverlayPermission()) }
     var accessibilityEnabled by remember { mutableStateOf(hasAccessibilityService()) }
-    var serviceRunning by remember { mutableStateOf(isServiceRunning()) }
+    var serviceRunning       by remember { mutableStateOf(isServiceRunning()) }
 
     LaunchedEffect(Unit) {
         while (true) {
-            overlayGranted = hasOverlayPermission()
+            overlayGranted       = hasOverlayPermission()
             accessibilityEnabled = hasAccessibilityService()
-            serviceRunning = isServiceRunning()
+            serviceRunning       = isServiceRunning()
             delay(500)
         }
     }
@@ -111,21 +126,23 @@ private fun MainScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(horizontal = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .padding(horizontal = 24.dp)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(Modifier.height(32.dp))
+
             Text("AssistiveTouch", style = MaterialTheme.typography.headlineMedium)
-            Spacer(Modifier.height(6.dp))
+            Spacer(Modifier.height(4.dp))
             Text(
                 "Botão flutuante de acessibilidade",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            Spacer(Modifier.height(40.dp))
+            Spacer(Modifier.height(32.dp))
 
-            // ── Permission checklist ──────────────────────────────────────
+            // ── Permissions ──────────────────────────────────────────────
             PermissionRow(
                 label = "Sobreposição de apps",
                 granted = overlayGranted,
@@ -138,9 +155,9 @@ private fun MainScreen(
                 onRequest = openAccessibilitySettings
             )
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(16.dp))
 
-            // ── Toggle ────────────────────────────────────────────────────
+            // ── Toggle ───────────────────────────────────────────────────
             Card(modifier = Modifier.fillMaxWidth()) {
                 Row(
                     modifier = Modifier
@@ -154,15 +171,15 @@ private fun MainScreen(
                         Spacer(Modifier.size(2.dp))
                         Text(
                             text = when {
-                                !allGranted -> "Permissões necessárias"
+                                !allGranted    -> "Permissões necessárias"
                                 serviceRunning -> "Ativo"
-                                else -> "Inativo"
+                                else           -> "Inativo"
                             },
                             style = MaterialTheme.typography.bodySmall,
                             color = when {
-                                !allGranted -> MaterialTheme.colorScheme.error
+                                !allGranted    -> MaterialTheme.colorScheme.error
                                 serviceRunning -> MaterialTheme.colorScheme.primary
-                                else -> MaterialTheme.colorScheme.onSurfaceVariant
+                                else           -> MaterialTheme.colorScheme.onSurfaceVariant
                             }
                         )
                     }
@@ -173,9 +190,119 @@ private fun MainScreen(
                     )
                 }
             }
+
+            Spacer(Modifier.height(24.dp))
+
+            // ── Settings ─────────────────────────────────────────────────
+            SettingsSection(settings)
+
+            Spacer(Modifier.height(32.dp))
         }
     }
 }
+
+// ── Settings section ──────────────────────────────────────────────────────────
+
+@Composable
+private fun SettingsSection(settings: SettingsRepository) {
+    var opacity    by remember { mutableFloatStateOf(settings.opacity) }
+    var sizeDp     by remember { mutableIntStateOf(settings.buttonSizeDp) }
+    var actions    by remember { mutableStateOf(settings.menuActions.toSet()) }
+
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text("Configurações", style = MaterialTheme.typography.titleMedium)
+
+            Spacer(Modifier.height(16.dp))
+            HorizontalDivider()
+            Spacer(Modifier.height(16.dp))
+
+            // Opacity
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Opacidade", style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    "${(opacity * 100).toInt()}%",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Slider(
+                value = opacity,
+                onValueChange = { opacity = it },
+                onValueChangeFinished = { settings.opacity = opacity },
+                valueRange = 0.3f..1.0f,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(Modifier.height(12.dp))
+
+            // Size
+            Text("Tamanho", style = MaterialTheme.typography.bodyMedium)
+            Spacer(Modifier.height(8.dp))
+            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                SettingsRepository.SIZE_OPTIONS.forEachIndexed { index, dp ->
+                    SegmentedButton(
+                        shape = SegmentedButtonDefaults.itemShape(
+                            index = index,
+                            count = SettingsRepository.SIZE_OPTIONS.size
+                        ),
+                        onClick = {
+                            sizeDp = dp
+                            settings.buttonSizeDp = dp
+                        },
+                        selected = sizeDp == dp
+                    ) {
+                        Text(SettingsRepository.SIZE_LABELS[index])
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(16.dp))
+            HorizontalDivider()
+            Spacer(Modifier.height(12.dp))
+
+            // Actions
+            Text("Ações do menu", style = MaterialTheme.typography.bodyMedium)
+            Spacer(Modifier.height(4.dp))
+
+            MenuAction.entries.forEach { action ->
+                val checked = action in actions
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = checked,
+                        onCheckedChange = { on ->
+                            actions = if (on) actions + action else actions - action
+                            settings.menuActions = actions.toList()
+                        }
+                    )
+                    Spacer(Modifier.size(4.dp))
+                    Text(
+                        stringResource(action.labelRes()),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+
+            AnimatedVisibility(visible = actions.isEmpty()) {
+                Text(
+                    "Selecione ao menos uma ação",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
+        }
+    }
+}
+
+// ── Permission row ────────────────────────────────────────────────────────────
 
 @Composable
 private fun PermissionRow(label: String, granted: Boolean, onRequest: () -> Unit) {
@@ -203,10 +330,8 @@ private fun PermissionRow(label: String, granted: Boolean, onRequest: () -> Unit
                     ),
                     contentDescription = null,
                     modifier = Modifier.size(20.dp),
-                    tint = if (granted)
-                        MaterialTheme.colorScheme.primary
-                    else
-                        MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = if (granted) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(Modifier.size(12.dp))
                 Text(label, style = MaterialTheme.typography.bodyMedium)
