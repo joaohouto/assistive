@@ -1,4 +1,4 @@
-package com.joaohouto.assistivetouch
+package com.joaohouto.assistivemenutool
 
 import org.junit.Test
 

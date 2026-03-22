@@ -1,4 +1,4 @@
-package com.joaohouto.assistivetouch
+package com.joaohouto.assistivemenutool
 
 import android.animation.ValueAnimator
 import android.app.Notification
@@ -314,7 +314,7 @@ class FloatingButtonService : Service() {
         when (action) {
             MenuAction.VOLUME_UP -> adjustVolume(AudioManager.ADJUST_RAISE)
             MenuAction.VOLUME_DOWN -> adjustVolume(AudioManager.ADJUST_LOWER)
-            else -> AssistiveTouchAccessibilityService.instance?.execute(action)
+            else -> AssistiveMenuAccessibilityService.instance?.execute(action)
         }
     }
 
@@ -344,7 +344,7 @@ class FloatingButtonService : Service() {
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(getString(R.string.notification_title))
             .setContentText(getString(R.string.notification_text))
-            .setSmallIcon(R.drawable.ic_assistivetouch)
+            .setSmallIcon(R.drawable.ic_floating_button)
             .setContentIntent(openIntent)
             .addAction(0, getString(R.string.action_stop), stopIntent)
             .setOngoing(true)
@@ -359,10 +359,10 @@ class FloatingButtonService : Service() {
         var isRunning = false
             private set
 
-        const val ACTION_STOP = "com.joaohouto.assistivetouch.STOP"
+        const val ACTION_STOP = "com.joaohouto.assistivemenutool.STOP"
 
         private const val NOTIFICATION_ID   = 1001
-        private const val CHANNEL_ID        = "assistive_touch"
+        private const val CHANNEL_ID        = "assistive_menu_tool"
         private const val MENU_ITEM_SIZE_DP = 90
         private const val DRAG_THRESHOLD    = 8
         private const val SNAP_DURATION_MS  = 260L

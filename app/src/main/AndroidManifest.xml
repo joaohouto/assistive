@@ -14,12 +14,12 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AssistiveTouch">
+        android:theme="@style/Theme.AssistiveMenuTool">
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.AssistiveTouch">
+            android:theme="@style/Theme.AssistiveMenuTool">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -37,7 +37,7 @@
         </service>
 
         <service
-            android:name=".AssistiveTouchAccessibilityService"
+            android:name=".AssistiveMenuAccessibilityService"
             android:exported="true"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>

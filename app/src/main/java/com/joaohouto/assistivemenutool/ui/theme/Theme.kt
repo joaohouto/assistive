@@ -1,4 +1,4 @@
-package com.joaohouto.assistivetouch.ui.theme
+package com.joaohouto.assistivemenutool.ui.theme
 
 import android.app.Activity
 import android.os.Build
@@ -34,7 +34,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun AssistiveTouchTheme(
+fun AssistiveMenuToolTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,

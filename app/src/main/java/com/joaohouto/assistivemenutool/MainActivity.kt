@@ -1,4 +1,4 @@
-package com.joaohouto.assistivetouch
+package com.joaohouto.assistivemenutool
 
 import android.content.Intent
 import android.net.Uri
@@ -46,7 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.joaohouto.assistivetouch.ui.theme.AssistiveTouchTheme
+import com.joaohouto.assistivemenutool.ui.theme.AssistiveMenuToolTheme
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
@@ -58,7 +58,7 @@ class MainActivity : ComponentActivity() {
         settings = SettingsRepository(this)
         enableEdgeToEdge()
         setContent {
-            AssistiveTouchTheme {
+            AssistiveMenuToolTheme {
                 MainScreen(
                     settings = settings,
                     hasOverlayPermission = { Settings.canDrawOverlays(this) },
@@ -132,7 +132,7 @@ private fun MainScreen(
         ) {
             Spacer(Modifier.height(32.dp))
 
-            Text("AssistiveTouch", style = MaterialTheme.typography.headlineMedium)
+            Text("Assistive Menu Tool", style = MaterialTheme.typography.headlineMedium)
             Spacer(Modifier.height(4.dp))
             Text(
                 "Botão flutuante de acessibilidade",
@@ -167,7 +167,7 @@ private fun MainScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Column {
-                        Text("AssistiveTouch", style = MaterialTheme.typography.titleMedium)
+                        Text("Assistive Menu Tool", style = MaterialTheme.typography.titleMedium)
                         Spacer(Modifier.size(2.dp))
                         Text(
                             text = when {

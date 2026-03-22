@@ -1,4 +1,4 @@
-package com.joaohouto.assistivetouch.ui.theme
+package com.joaohouto.assistivemenutool.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

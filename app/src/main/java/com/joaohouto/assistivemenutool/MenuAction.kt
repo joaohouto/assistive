@@ -1,4 +1,4 @@
-package com.joaohouto.assistivetouch
+package com.joaohouto.assistivemenutool
 
 enum class MenuAction {
     HOME, BACK, RECENTS, LOCK, VOLUME_UP, VOLUME_DOWN;

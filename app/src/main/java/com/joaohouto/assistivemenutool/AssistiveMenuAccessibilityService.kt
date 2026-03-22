@@ -1,11 +1,11 @@
-package com.joaohouto.assistivetouch
+package com.joaohouto.assistivemenutool
 
 import android.accessibilityservice.AccessibilityService
 import android.content.Intent
 import android.os.Build
 import android.view.accessibility.AccessibilityEvent
 
-class AssistiveTouchAccessibilityService : AccessibilityService() {
+class AssistiveMenuAccessibilityService : AccessibilityService() {
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -36,7 +36,7 @@ class AssistiveTouchAccessibilityService : AccessibilityService() {
     }
 
     companion object {
-        var instance: AssistiveTouchAccessibilityService? = null
+        var instance: AssistiveMenuAccessibilityService? = null
             private set
 
         val isEnabled get() = instance != null
