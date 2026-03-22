@@ -17,9 +17,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -31,7 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.joaohouto.assistivetouch.ui.theme.AssistiveTouchTheme
 import kotlinx.coroutines.delay
@@ -45,13 +48,17 @@ class MainActivity : ComponentActivity() {
             AssistiveTouchTheme {
                 MainScreen(
                     hasOverlayPermission = { Settings.canDrawOverlays(this) },
-                    requestPermission = {
+                    hasAccessibilityService = { isAccessibilityServiceEnabled() },
+                    requestOverlayPermission = {
                         startActivity(
                             Intent(
                                 Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                                 Uri.parse("package:$packageName")
                             )
                         )
+                    },
+                    openAccessibilitySettings = {
+                        startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
                     },
                     isServiceRunning = { FloatingButtonService.isRunning },
                     toggleService = {
@@ -65,26 +72,39 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    private fun isAccessibilityServiceEnabled(): Boolean {
+        val enabled = Settings.Secure.getString(
+            contentResolver,
+            Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+        ) ?: return false
+        return enabled.contains(packageName, ignoreCase = true)
+    }
 }
 
 @Composable
 private fun MainScreen(
     hasOverlayPermission: () -> Boolean,
-    requestPermission: () -> Unit,
+    hasAccessibilityService: () -> Boolean,
+    requestOverlayPermission: () -> Unit,
+    openAccessibilitySettings: () -> Unit,
     isServiceRunning: () -> Boolean,
     toggleService: () -> Unit
 ) {
-    var permissionGranted by remember { mutableStateOf(hasOverlayPermission()) }
+    var overlayGranted by remember { mutableStateOf(hasOverlayPermission()) }
+    var accessibilityEnabled by remember { mutableStateOf(hasAccessibilityService()) }
     var serviceRunning by remember { mutableStateOf(isServiceRunning()) }
 
-    // Poll state on resume (permission can be granted in Settings and user returns)
     LaunchedEffect(Unit) {
         while (true) {
-            permissionGranted = hasOverlayPermission()
+            overlayGranted = hasOverlayPermission()
+            accessibilityEnabled = hasAccessibilityService()
             serviceRunning = isServiceRunning()
             delay(500)
         }
     }
+
+    val allGranted = overlayGranted && accessibilityEnabled
 
     Scaffold(modifier = Modifier.fillMaxSize()) { padding ->
         Column(
@@ -95,91 +115,113 @@ private fun MainScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            Text("AssistiveTouch", style = MaterialTheme.typography.headlineMedium)
+            Spacer(Modifier.height(6.dp))
             Text(
-                text = "AssistiveTouch",
-                style = MaterialTheme.typography.headlineMedium
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(
-                text = "Botão flutuante de acessibilidade",
+                "Botão flutuante de acessibilidade",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(Modifier.height(40.dp))
 
-            if (!permissionGranted) {
-                PermissionCard(onGrant = requestPermission)
-            } else {
-                ServiceToggleCard(
-                    running = serviceRunning,
-                    onToggle = {
-                        toggleService()
-                        serviceRunning = !serviceRunning
+            // ── Permission checklist ──────────────────────────────────────
+            PermissionRow(
+                label = "Sobreposição de apps",
+                granted = overlayGranted,
+                onRequest = requestOverlayPermission
+            )
+            Spacer(Modifier.height(8.dp))
+            PermissionRow(
+                label = "Serviço de acessibilidade",
+                granted = accessibilityEnabled,
+                onRequest = openAccessibilitySettings
+            )
+
+            Spacer(Modifier.height(24.dp))
+
+            // ── Toggle ────────────────────────────────────────────────────
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column {
+                        Text("AssistiveTouch", style = MaterialTheme.typography.titleMedium)
+                        Spacer(Modifier.size(2.dp))
+                        Text(
+                            text = when {
+                                !allGranted -> "Permissões necessárias"
+                                serviceRunning -> "Ativo"
+                                else -> "Inativo"
+                            },
+                            style = MaterialTheme.typography.bodySmall,
+                            color = when {
+                                !allGranted -> MaterialTheme.colorScheme.error
+                                serviceRunning -> MaterialTheme.colorScheme.primary
+                                else -> MaterialTheme.colorScheme.onSurfaceVariant
+                            }
+                        )
                     }
-                )
+                    Switch(
+                        checked = serviceRunning && allGranted,
+                        onCheckedChange = { if (allGranted) toggleService() },
+                        enabled = allGranted
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-private fun PermissionCard(onGrant: () -> Unit) {
+private fun PermissionRow(label: String, granted: Boolean, onRequest: () -> Unit) {
     Card(
+        modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.errorContainer
+            containerColor = if (granted)
+                MaterialTheme.colorScheme.secondaryContainer
+            else
+                MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
-        Column(
-            modifier = Modifier.padding(20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "Permissão necessária",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onErrorContainer
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "O AssistiveTouch precisa de permissão para exibir sobre outros apps.",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onErrorContainer,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = onGrant) {
-                Text("Conceder Permissão")
-            }
-        }
-    }
-}
-
-@Composable
-private fun ServiceToggleCard(running: Boolean, onToggle: () -> Unit) {
-    Card(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column {
-                Text(
-                    text = "AssistiveTouch",
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Spacer(modifier = Modifier.size(2.dp))
-                Text(
-                    text = if (running) "Ativo" else "Inativo",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = if (running)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    painter = painterResource(
+                        if (granted) android.R.drawable.checkbox_on_background
+                        else android.R.drawable.checkbox_off_background
+                    ),
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp),
+                    tint = if (granted)
                         MaterialTheme.colorScheme.primary
                     else
                         MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                Spacer(Modifier.size(12.dp))
+                Text(label, style = MaterialTheme.typography.bodyMedium)
             }
-            Switch(checked = running, onCheckedChange = { onToggle() })
+            if (!granted) {
+                OutlinedButton(
+                    onClick = onRequest,
+                    modifier = Modifier.height(32.dp),
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                        horizontal = 12.dp, vertical = 0.dp
+                    )
+                ) {
+                    Text("Ativar", style = MaterialTheme.typography.labelSmall)
+                }
+            }
         }
     }
 }

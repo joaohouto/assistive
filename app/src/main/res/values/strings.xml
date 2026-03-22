@@ -7,4 +7,5 @@
     <string name="action_back">Voltar</string>
     <string name="action_recents">Recentes</string>
     <string name="action_lock">Bloquear</string>
+    <string name="accessibility_service_description">Permite ao AssistiveTouch executar ações como voltar, home, recentes e bloquear tela</string>
 </resources>

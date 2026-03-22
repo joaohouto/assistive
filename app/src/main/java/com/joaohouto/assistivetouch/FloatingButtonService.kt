@@ -324,12 +324,7 @@ class FloatingButtonService : Service() {
 
     private fun onMenuAction(action: MenuAction) {
         hideMenu()
-        when (action) {
-            MenuAction.HOME -> Unit    // Etapa 3
-            MenuAction.BACK -> Unit    // Etapa 3
-            MenuAction.RECENTS -> Unit // Etapa 3
-            MenuAction.LOCK -> Unit    // Etapa 3
-        }
+        AssistiveTouchAccessibilityService.instance?.execute(action)
     }
 
     // ── Data types ───────────────────────────────────────────────────────────
