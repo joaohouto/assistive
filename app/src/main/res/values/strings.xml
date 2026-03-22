@@ -9,5 +9,9 @@
     <string name="action_lock">Bloquear</string>
     <string name="action_volume_up">Volume +</string>
     <string name="action_volume_down">Volume −</string>
+    <string name="action_screenshot">Screenshot</string>
+    <string name="action_notifications">Notificações</string>
+    <string name="action_quick_settings">Painel Rápido</string>
+    <string name="action_open_app">Configurar</string>
     <string name="accessibility_service_description">Permite ao Assistive Menu Tool executar ações como voltar, home, recentes e bloquear tela</string>
 </resources>

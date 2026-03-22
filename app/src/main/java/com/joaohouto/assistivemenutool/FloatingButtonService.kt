@@ -312,8 +312,15 @@ class FloatingButtonService : Service() {
     private fun onMenuAction(action: MenuAction) {
         hideMenu()
         when (action) {
-            MenuAction.VOLUME_UP -> adjustVolume(AudioManager.ADJUST_RAISE)
+            MenuAction.VOLUME_UP   -> adjustVolume(AudioManager.ADJUST_RAISE)
             MenuAction.VOLUME_DOWN -> adjustVolume(AudioManager.ADJUST_LOWER)
+            MenuAction.OPEN_APP    -> openApp()
+            MenuAction.SCREENSHOT  -> {
+                // Aguarda a animação de fechamento do menu antes de capturar
+                android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                    AssistiveMenuAccessibilityService.instance?.execute(action)
+                }, SCREENSHOT_DELAY_MS)
+            }
             else -> AssistiveMenuAccessibilityService.instance?.execute(action)
         }
     }
@@ -321,6 +328,15 @@ class FloatingButtonService : Service() {
     private fun adjustVolume(direction: Int) {
         val audio = getSystemService(AUDIO_SERVICE) as AudioManager
         audio.adjustVolume(direction, AudioManager.FLAG_SHOW_UI)
+    }
+
+    private fun openApp() {
+        startActivity(
+            android.content.Intent(this, MainActivity::class.java).apply {
+                flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK or
+                        android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP
+            }
+        )
     }
 
     // ── Notification ─────────────────────────────────────────────────────────
@@ -365,8 +381,9 @@ class FloatingButtonService : Service() {
         private const val CHANNEL_ID        = "assistive_menu_tool"
         private const val MENU_ITEM_SIZE_DP = 90
         private const val DRAG_THRESHOLD    = 8
-        private const val SNAP_DURATION_MS  = 260L
-        private const val MENU_SHOW_MS      = 200L
-        private const val MENU_HIDE_MS      = 150L
+        private const val SNAP_DURATION_MS    = 260L
+        private const val MENU_SHOW_MS        = 200L
+        private const val MENU_HIDE_MS        = 150L
+        private const val SCREENSHOT_DELAY_MS = 400L
     }
 }

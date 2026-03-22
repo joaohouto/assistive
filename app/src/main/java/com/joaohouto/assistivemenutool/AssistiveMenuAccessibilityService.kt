@@ -31,7 +31,14 @@ class AssistiveMenuAccessibilityService : AccessibilityService() {
                     performGlobalAction(GLOBAL_ACTION_LOCK_SCREEN)
                 }
             }
-            else -> Unit  // volume handled by AudioManager in FloatingButtonService
+            MenuAction.SCREENSHOT -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    performGlobalAction(GLOBAL_ACTION_TAKE_SCREENSHOT)
+                }
+            }
+            MenuAction.NOTIFICATIONS  -> performGlobalAction(GLOBAL_ACTION_NOTIFICATIONS)
+            MenuAction.QUICK_SETTINGS -> performGlobalAction(GLOBAL_ACTION_QUICK_SETTINGS)
+            else -> Unit  // VOLUME e OPEN_APP tratados no FloatingButtonService
         }
     }
 
