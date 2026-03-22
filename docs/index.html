@@ -51,9 +51,11 @@
         margin-bottom: 28px;
       }
 
-      .icon svg {
-        width: 44px;
-        height: 44px;
+      .icon .circle {
+        width: 64px;
+        height: 64px;
+        background: var(--accent);
+        border-radius: 50%;
       }
 
       h1 {
@@ -194,9 +196,7 @@
   <body>
     <section class="hero">
       <div class="icon">
-        <svg viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="44" cy="44" r="34" fill="white" />
-        </svg>
+        <div class="circle"></div>
       </div>
 
       <h1>Assistive Menu Tool</h1>
