@@ -1,0 +1,13 @@
+Assistive Menu Tool adds a draggable floating button that stays on top of every app. Tap it to open a menu with quick system actions, inspired by the iOS AssistiveTouch feature.
+
+Features:
+- Draggable button that snaps to the nearest edge when released
+- Animated expandable menu
+- System actions: Home, Back, Recents, Lock Screen, Volume Up/Down, Screenshot, Notifications, Quick Settings
+- Configurable opacity and button size
+
+Requires two special permissions granted manually:
+1. Display over other apps (SYSTEM_ALERT_WINDOW)
+2. Accessibility Service (BIND_ACCESSIBILITY_SERVICE)
+
+No internet access. No analytics. No ads. Fully open source.

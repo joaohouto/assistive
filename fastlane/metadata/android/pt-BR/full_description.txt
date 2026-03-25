@@ -1,0 +1,13 @@
+O Assistive Menu Tool adiciona um botão flutuante arrastável que fica sobre todos os apps. Toque nele para abrir um menu com ações rápidas do sistema, inspirado no recurso AssistiveTouch do iOS.
+
+Funcionalidades:
+- Botão arrastável que gruda na borda mais próxima ao soltar
+- Menu expansível animado
+- Ações do sistema: Home, Voltar, Recentes, Bloquear tela, Volume +/-, Screenshot, Notificações, Configurações rápidas
+- Opacidade e tamanho do botão configuráveis
+
+Requer duas permissões especiais concedidas manualmente:
+1. Exibir sobre outros apps (SYSTEM_ALERT_WINDOW)
+2. Serviço de acessibilidade (BIND_ACCESSIBILITY_SERVICE)
+
+Sem acesso à internet. Sem analytics. Sem anúncios. Totalmente código aberto.

@@ -13,10 +13,17 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file("/home/joao/.android/assistivetouch-release.jks")
-            storePassword = "JzsSauhmeQWOt8wAgncADn4gClQ"
-            keyAlias = "assistivetouch-key"
-            keyPassword = "JzsSauhmeQWOt8wAgncADn4gClQ"
+            val keystorePath = System.getenv("KEYSTORE_PATH")
+            val keyAliasEnv  = System.getenv("KEY_ALIAS")
+            val storePass    = System.getenv("STORE_PASSWORD")
+            val keyPass      = System.getenv("KEY_PASSWORD")
+
+            if (keystorePath != null && keyAliasEnv != null && storePass != null && keyPass != null) {
+                storeFile     = file(keystorePath)
+                keyAlias      = keyAliasEnv
+                storePassword = storePass
+                keyPassword   = keyPass
+            }
         }
     }
 
@@ -34,7 +41,10 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = if (System.getenv("KEYSTORE_PATH") != null)
+                signingConfigs.getByName("release")
+            else
+                signingConfigs.getByName("debug")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

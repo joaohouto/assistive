@@ -1,0 +1,1 @@
+Replaced all icons with official Material Icons filled paths for visual consistency.
