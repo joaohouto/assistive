@@ -8,11 +8,11 @@
     </title>
     <meta
       name="description"
-      content="Botão flutuante de acessibilidade para Android. Acesse Home, Voltar, Recentes, Screenshot e muito mais com um toque, de qualquer tela. Gratuito e de código aberto."
+      content="Botão flutuante de acessibilidade para Android. Acesse Home, Voltar, Recentes, Screenshot e muito mais com um toque, de qualquer tela. Gratuito, seguro e de código aberto."
     />
     <meta
       name="keywords"
-      content="assistive touch android, botão flutuante android, acessibilidade android, assistive menu, floating button android"
+      content="assistive touch android, botão flutuante android, acessibilidade android, assistive menu, floating button android, fdroid"
     />
     <meta name="author" content="João Couto" />
     <link rel="canonical" href="https://joaohouto.github.io/assistive/" />
@@ -26,7 +26,7 @@
     />
     <meta
       property="og:description"
-      content="Botão flutuante de acessibilidade para Android. Acesse Home, Voltar, Recentes, Screenshot e muito mais com um toque, de qualquer tela. Gratuito e de código aberto."
+      content="Botão flutuante de acessibilidade para Android. Acesse Home, Voltar, Recentes, Screenshot e muito mais com um toque. Disponível no F-Droid."
     />
     <meta
       property="og:image"
@@ -41,7 +41,7 @@
     />
     <meta
       name="twitter:description"
-      content="Botão flutuante de acessibilidade para Android. Acesse Home, Voltar, Recentes, Screenshot e muito mais com um toque, de qualquer tela."
+      content="Botão flutuante de acessibilidade para Android. Acesse Home, Voltar, Recentes, Screenshot e muito mais com um toque."
     />
     <meta
       name="twitter:image"
@@ -64,12 +64,13 @@
         --text: #f0f0f0;
         --muted: #888;
         --accent: #ffffff;
+        --fdroid: #1976d2;
       }
 
       body {
         background: var(--bg);
         color: var(--text);
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         min-height: 100vh;
         display: flex;
         flex-direction: column;
@@ -117,34 +118,62 @@
         margin: 0 auto 36px;
       }
 
-      .btn-download {
+      .cta-group {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .btn-primary {
         display: inline-flex;
         align-items: center;
         gap: 10px;
-        background: var(--accent);
-        color: #000;
+        background: #1976d2;
+        color: #ffffff;
         font-size: 15px;
         font-weight: 600;
         padding: 14px 28px;
         border-radius: 50px;
         text-decoration: none;
-        transition: opacity 0.15s;
+        transition: background 0.15s, opacity 0.15s;
+        box-shadow: 0 4px 16px rgba(25, 118, 210, 0.3);
       }
 
-      .btn-download:hover {
-        opacity: 0.85;
+      .btn-primary:hover {
+        background: #1565c0;
+        opacity: 0.95;
       }
 
-      .btn-download svg {
+      .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--surface);
+        color: var(--text);
+        border: 1px solid var(--border);
+        font-size: 15px;
+        font-weight: 600;
+        padding: 14px 24px;
+        border-radius: 50px;
+        text-decoration: none;
+        transition: border-color 0.15s, background 0.15s;
+      }
+
+      .btn-secondary:hover {
+        background: #252525;
+        border-color: #444;
+      }
+
+      .btn-primary svg, .btn-secondary svg {
         width: 18px;
         height: 18px;
       }
 
       .version-badge {
-        margin-top: 14px;
+        margin-top: 18px;
         font-size: 13px;
         color: var(--muted);
-        min-height: 18px;
       }
 
       .version-badge a {
@@ -186,7 +215,7 @@
       .features {
         width: 100%;
         max-width: 720px;
-        padding: 0 24px 80px;
+        padding: 0 24px 60px;
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 16px;
@@ -216,7 +245,7 @@
         line-height: 1.5;
       }
 
-      /* ── Install Guide ── */
+      /* ── Download & Install Section ── */
       .install-guide {
         width: 100%;
         max-width: 720px;
@@ -224,7 +253,7 @@
       }
 
       .install-guide h2 {
-        font-size: clamp(26px, 4vw, 36px);
+        font-size: clamp(24px, 4vw, 32px);
         font-weight: 700;
         letter-spacing: -0.5px;
         margin-bottom: 8px;
@@ -237,86 +266,72 @@
         margin-bottom: 32px;
       }
 
-      .step-group {
-        margin-bottom: 32px;
+      .install-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 28px;
+        margin-bottom: 24px;
       }
 
-      .step-group-title {
+      .install-card.recommended {
+        border-color: #1976d2;
+        box-shadow: 0 0 24px rgba(25, 118, 210, 0.15);
+      }
+
+      .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+
+      .card-header h3 {
+        font-size: 18px;
+        font-weight: 600;
+      }
+
+      .badge-recommended {
+        background: rgba(25, 118, 210, 0.2);
+        color: #64b5f6;
+        border: 1px solid rgba(25, 118, 210, 0.4);
         font-size: 11px;
         font-weight: 600;
-        letter-spacing: 0.08em;
         text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 4px 10px;
+        border-radius: 20px;
+      }
+
+      .install-card p {
+        font-size: 14px;
         color: var(--muted);
-        margin-bottom: 12px;
-        padding-bottom: 8px;
-        border-bottom: 1px solid var(--border);
+        line-height: 1.6;
+        margin-bottom: 20px;
       }
 
-      .step {
+      .step-list {
+        list-style: none;
+        margin-top: 12px;
+      }
+
+      .step-list li {
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.6;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border);
         display: flex;
-        gap: 16px;
-        padding: 16px 0;
-        border-bottom: 1px solid var(--border);
+        gap: 10px;
       }
 
-      .step:last-child {
+      .step-list li:last-child {
         border-bottom: none;
       }
 
-      .step-num {
-        flex-shrink: 0;
-        width: 28px;
-        height: 28px;
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--muted);
-        margin-top: 2px;
-      }
-
-      .step-body h4 {
-        font-size: 14px;
-        font-weight: 600;
-        margin-bottom: 4px;
-      }
-
-      .step-body p {
-        font-size: 13px;
-        color: var(--muted);
-        line-height: 1.6;
-      }
-
-      .step-body .path {
-        display: inline-block;
-        margin-top: 6px;
-        font-size: 12px;
-        font-family: ui-monospace, "SF Mono", monospace;
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 6px;
-        padding: 4px 8px;
+      .step-list .step-num-sm {
         color: var(--text);
-      }
-
-      .callout {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-left: 3px solid #888;
-        border-radius: 10px;
-        padding: 14px 16px;
-        margin-top: 16px;
-        font-size: 13px;
-        color: var(--muted);
-        line-height: 1.6;
-      }
-
-      .callout strong {
-        color: var(--text);
+        font-weight: 600;
       }
 
       /* ── Footer ── */
@@ -352,19 +367,24 @@
         com um toque, de qualquer tela.
       </p>
 
-      <a class="btn-download" href="#como-instalar">
-        <svg
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          style="width: 18px; height: 18px"
-        >
-          <path
-            d="M12 4a1 1 0 0 1 1 1v9.586l2.293-2.293a1 1 0 1 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4a1 1 0 1 1 1.414-1.414L11 14.586V5a1 1 0 0 1 1-1z"
-          />
-          <path d="M5 19a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1z" />
-        </svg>
-        Fazer o download (.apk)
-      </a>
+      <div class="cta-group">
+        <a class="btn-primary" href="https://f-droid.org/packages/com.joaohouto.assistivemenutool/" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+          Baixar no F-Droid
+        </a>
+        <a class="btn-secondary" href="https://github.com/joaohouto/assistive/releases/latest" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 4v-2h14v2H5z"/>
+          </svg>
+          Download APK
+        </a>
+      </div>
+
+      <p class="version-badge" id="version-badge">
+        <a href="https://github.com/joaohouto/assistive/releases" target="_blank">ver todas as versões no GitHub</a>
+      </p>
     </section>
 
     <div class="divider"></div>
@@ -409,227 +429,87 @@
       </div>
       <div class="feature">
         <div class="feature-icon">◎</div>
-        <h3>Sem root</h3>
+        <h3>Sem root & Privado</h3>
         <p>
           Usa apenas APIs públicas do Android. Funciona a partir do Android 7.0
-          (API 24).
+          (API 24) sem coletar dados.
         </p>
       </div>
     </section>
 
     <div class="divider"></div>
 
-    <section class="install-guide" id="como-instalar">
+    <section class="install-guide" id="instalar">
       <h2>Como instalar</h2>
       <p class="section-desc">
-        O app é distribuído como APK fora da Play Store. Isso exige dois passos
-        extras de configuração — ambos são reversíveis e não afetam a segurança
-        do seu dispositivo a longo prazo.
+        Recomendamos a instalação diretamente através do F-Droid para garantir atualizações automáticas e compatibilidade com o sistema.
       </p>
 
-      <div style="text-align: center; padding-bottom: 32px">
-        <a
-          class="btn-download"
-          id="btn-download"
-          href="https://github.com/joaohouto/assistive/releases/latest"
-        >
-          <svg
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            style="width: 18px; height: 18px"
-          >
-            <path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 4v-2h14v2H5z" />
-          </svg>
-          Download APK
+      <!-- F-Droid Recommended Card -->
+      <div class="install-card recommended">
+        <div class="card-header">
+          <h3>1. Via F-Droid (Recomendado)</h3>
+          <span class="badge-recommended">Oficial & Seguro</span>
+        </div>
+        <p>
+          O F-Droid é um catálogo oficial de aplicativos de código aberto para Android. Instalar pelo F-Droid garante integridade e evita alertas de segurança do Play Protect ou incompatibilidades com aplicativos bancários.
+        </p>
+        <a class="btn-primary" href="https://f-droid.org/packages/com.joaohouto.assistivemenutool/" target="_blank" rel="noopener">
+          Abrir página no F-Droid
         </a>
-        <p class="version-badge" id="version-badge" style="margin-top: 12px">
-          <a
-            href="https://github.com/joaohouto/assistive/releases"
-            target="_blank"
-            >ver todas as versões</a
-          >
-        </p>
       </div>
 
-      <div class="step-group">
-        <p class="step-group-title">
-          Passo 1 — Desativar o Play Protect temporariamente
+      <!-- Manual APK Card -->
+      <div class="install-card">
+        <div class="card-header">
+          <h3>2. Instalação Manual (APK)</h3>
+        </div>
+        <p>
+          Se preferir baixar o arquivo `.apk` diretamente sem usar o F-Droid, você pode obtê-lo na nossa página de Releases do GitHub.
         </p>
-
-        <div class="step">
-          <div class="step-num">1</div>
-          <div class="step-body">
-            <h4>Abra o Google Play Store</h4>
-            <p>
-              Toque na sua foto de perfil (canto superior direito) e acesse
-              <strong>Play Protect</strong>.
-            </p>
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="step-num">2</div>
-          <div class="step-body">
-            <h4>Desative a verificação de apps</h4>
-            <p>
-              Toque no ícone de engrenagem (⚙) e desative
-              <strong>"Verificar apps com o Play Protect"</strong>.
-            </p>
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="step-num">3</div>
-          <div class="step-body">
-            <h4>Instale o APK normalmente</h4>
-            <p>
-              Baixe o APK, abra o arquivo e confirme a instalação. Após
-              instalar, você pode reativar o Play Protect.
-            </p>
-          </div>
-        </div>
-
-        <div class="callout">
-          <strong>Por que o Play Protect bloqueia?</strong> O Google classifica
-          como suspeito qualquer APK que não passou pela revisão da Play Store.
-          Isso é uma proteção legítima contra malware — mas também impede apps
-          de código aberto distribuídos diretamente. O Assistive Menu Tool tem
-          <a
-            href="https://github.com/joaohouto/assistive"
-            target="_blank"
-            style="color: var(--text)"
-            >código 100% aberto no GitHub</a
-          >
-          e não coleta nenhum dado.
+        <ul class="step-list">
+          <li>
+            <span class="step-num-sm">1.</span>
+            <span>Baixe o APK na página de releases oficiais do GitHub.</span>
+          </li>
+          <li>
+            <span class="step-num-sm">2.</span>
+            <span>Ao abrir o arquivo, permita a instalação a partir da sua fonte de arquivos se solicitado pelo Android.</span>
+          </li>
+          <li>
+            <span class="step-num-sm">3.</span>
+            <span>Abra o app e conceda a permissão de sobreposição de tela e o serviço de acessibilidade.</span>
+          </li>
+        </ul>
+        <div style="margin-top: 20px;">
+          <a class="btn-secondary" href="https://github.com/joaohouto/assistive/releases/latest" target="_blank" rel="noopener">
+            Baixar APK do GitHub
+          </a>
         </div>
       </div>
-
-      <div class="step-group">
-        <p class="step-group-title">
-          Passo 2 — Habilitar "Instalar apps desconhecidos"
-        </p>
-
-        <div class="step">
-          <div class="step-num">1</div>
-          <div class="step-body">
-            <h4>Acesse as configurações do Android</h4>
-            <p>
-              Vá em <strong>Configurações → Aplicativos</strong> e encontre o
-              app que você usará para abrir o APK (geralmente
-              <em>Arquivos</em> ou <em>Chrome</em>).
-            </p>
-            <span class="path"
-              >Configurações → Aplicativos → [Gerenciador de arquivos] →
-              Instalar apps desconhecidos</span
-            >
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="step-num">2</div>
-          <div class="step-body">
-            <h4>Permita a instalação</h4>
-            <p>
-              Ative a opção <strong>"Permitir desta fonte"</strong>. Você pode
-              desativar novamente após a instalação.
-            </p>
-          </div>
-        </div>
-
-        <div class="callout">
-          <strong>Por que essa permissão existe?</strong> O Android bloqueia por
-          padrão a instalação de apps fora da loja oficial como medida de
-          segurança. Ao liberar somente para o app de arquivos (e não para o
-          sistema todo), você mantém o controle de qual fonte pode instalar
-          apps.
-        </div>
-      </div>
-
-      <div class="step-group">
-        <p class="step-group-title">
-          Passo 3 — Conceder permissões ao Assistive Menu Tool
-        </p>
-
-        <div class="step">
-          <div class="step-num">1</div>
-          <div class="step-body">
-            <h4>Permissão de sobreposição</h4>
-            <p>
-              Ao abrir o app pela primeira vez, ele pedirá para
-              <strong>"Aparecer sobre outros apps"</strong>. Essa permissão é
-              obrigatória para que o botão flutuante fique visível em cima de
-              outras telas.
-            </p>
-            <span class="path"
-              >Configurações → Aplicativos → Assistive Menu Tool → Aparecer
-              sobre outros apps</span
-            >
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="step-num">2</div>
-          <div class="step-body">
-            <h4>Permissões restritas (Android 13+)</h4>
-            <p>
-              No Android 13 e acima, apps instalados fora da Play Store recebem
-              automaticamente um conjunto reduzido de permissões. Para que o
-              botão funcione como ferramenta de acessibilidade completa, é
-              necessário remover essa restrição manualmente.
-            </p>
-            <span class="path"
-              >Configurações → Aplicativos → Assistive Menu Tool → (⋮) [três
-              pontinhos] → Permitir configurações restritas</span
-            >
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="step-num">3</div>
-          <div class="step-body">
-            <h4>Ative o app e pronto</h4>
-            <p>
-              De volta ao Assistive Menu Tool, toque em <strong>Ligar</strong>.
-              O botão flutuante aparecerá na tela e ficará ativo mesmo ao trocar
-              de app.
-            </p>
-          </div>
-        </div>
-
-        <div class="callout">
-          <strong>Por que permissões restritas?</strong> A partir do Android 13,
-          o sistema limita automaticamente as permissões de apps instalados fora
-          da Play Store — mesmo que o app as declare no manifesto. Isso impede
-          que apps maliciosos obtenham acesso amplo sem revisão. Liberar
-          manualmente as permissões restritas para este app específico autoriza
-          apenas ele, sem afetar o restante do sistema.
-        </div>
-      </div>
-
     </section>
 
     <footer>
       <p>
         Código aberto sob licença MIT ·
-        <a href="https://github.com/joaohouto/assistive" target="_blank"
-          >GitHub</a
-        >
+        <a href="https://github.com/joaohouto/assistive" target="_blank">GitHub</a> ·
+        <a href="https://f-droid.org/packages/com.joaohouto.assistivemenutool/" target="_blank">F-Droid</a>
       </p>
     </footer>
 
     <script>
-      // Busca a versão mais recente via GitHub API e atualiza o botão de download
       fetch("https://api.github.com/repos/joaohouto/assistive/releases/latest")
         .then((r) => r.json())
         .then((data) => {
-          const apk = data.assets?.find((a) => a.name.endsWith(".apk"));
-          if (apk) {
-            document.getElementById("btn-download").href =
-              apk.browser_download_url;
-          }
           if (data.tag_name) {
             const badge = document.getElementById("version-badge");
-            badge.innerHTML = `${data.tag_name} · <a href="https://github.com/joaohouto/assistive/releases" target="_blank">ver todas as versões</a>`;
+            badge.innerHTML = `${data.tag_name} · <a href="https://github.com/joaohouto/assistive/releases" target="_blank">ver todas as versões no GitHub</a>`;
+          }
+        })
+        .catch(() => {});
+    </script>
+  </body>
+</html>f="https://github.com/joaohouto/assistive/releases" target="_blank">ver todas as versões</a>`;
           }
         })
         .catch(() => {}); // fallback: botão já aponta para /releases/latest
