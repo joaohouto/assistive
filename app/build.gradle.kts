@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -13,16 +16,26 @@ android {
 
     signingConfigs {
         create("release") {
-            val keystorePath = System.getenv("KEYSTORE_PATH")
-            val keyAliasEnv  = System.getenv("KEY_ALIAS")
-            val storePass    = System.getenv("STORE_PASSWORD")
-            val keyPass      = System.getenv("KEY_PASSWORD")
+            val keystorePropertiesFile = rootProject.file("keystore.properties")
+            if (keystorePropertiesFile.exists()) {
+                val props = Properties()
+                props.load(FileInputStream(keystorePropertiesFile))
+                storeFile = rootProject.file(props.getProperty("storeFile"))
+                storePassword = props.getProperty("storePassword")
+                keyAlias = props.getProperty("keyAlias")
+                keyPassword = props.getProperty("keyPassword")
+            } else {
+                val keystorePath = System.getenv("KEYSTORE_PATH")
+                val keyAliasEnv  = System.getenv("KEY_ALIAS")
+                val storePass    = System.getenv("STORE_PASSWORD")
+                val keyPass      = System.getenv("KEY_PASSWORD")
 
-            if (keystorePath != null && keyAliasEnv != null && storePass != null && keyPass != null) {
-                storeFile     = file(keystorePath)
-                keyAlias      = keyAliasEnv
-                storePassword = storePass
-                keyPassword   = keyPass
+                if (keystorePath != null && keyAliasEnv != null && storePass != null && keyPass != null) {
+                    storeFile     = file(keystorePath)
+                    keyAlias      = keyAliasEnv
+                    storePassword = storePass
+                    keyPassword   = keyPass
+                }
             }
         }
     }
@@ -41,10 +54,7 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            signingConfig = if (System.getenv("KEYSTORE_PATH") != null)
-                signingConfigs.getByName("release")
-            else
-                signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
