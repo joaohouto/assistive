@@ -1,8 +1,16 @@
+<p align="center">
+  <img src="docs/icon.jpg" width="128" height="128" alt="Assistive Menu Tool Icon" style="border-radius: 28px;" />
+</p>
+
 # Assistive Menu Tool
 
 Botão flutuante de acessibilidade para Android. Exibe um botão arrastável sobre qualquer tela que, ao ser tocado, abre um menu com ações rápidas do sistema — similar ao recurso de acessibilidade disponível em outros sistemas operacionais móveis.
 
 ---
+
+<p align="center">
+  <img src="docs/feature_graphic.jpg" width="100%" alt="Assistive Touch Banner" />
+</p>
 
 <p align="center">
   <a href="https://joaohouto.github.io/assistive/">
