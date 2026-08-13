@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -33,6 +34,7 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -121,6 +123,38 @@ private fun MainScreen(
 
     val allGranted = overlayGranted && accessibilityEnabled
 
+    var showAccessibilityDisclosure by remember { mutableStateOf(false) }
+
+    if (showAccessibilityDisclosure) {
+        AlertDialog(
+            onDismissRequest = { showAccessibilityDisclosure = false },
+            title = { Text("Uso do Serviço de Acessibilidade") },
+            text = {
+                Text(
+                    "O Assistive Menu Tool requer a API AccessibilityService exclusivamente para permitir que você execute ações globais do sistema (como ir para a tela Inicial, Voltar, abrir Apps Recentes, Bloquear Tela, Capturar Tela e Notificações) através do botão flutuante.\n\n" +
+                    "• O app NÃO monitora a sua tela.\n" +
+                    "• O app NÃO lê ou digita informações.\n" +
+                    "• O app NÃO coleta ou compartilha nenhum dado pessoal ou confidencial do usuário."
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showAccessibilityDisclosure = false
+                        openAccessibilitySettings()
+                    }
+                ) {
+                    Text("Concordar e Continuar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showAccessibilityDisclosure = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
+
     Scaffold(modifier = Modifier.fillMaxSize()) { padding ->
         Column(
             modifier = Modifier
@@ -152,7 +186,7 @@ private fun MainScreen(
             PermissionRow(
                 label = "Serviço de acessibilidade",
                 granted = accessibilityEnabled,
-                onRequest = openAccessibilitySettings
+                onRequest = { showAccessibilityDisclosure = true }
             )
 
             Spacer(Modifier.height(16.dp))
