@@ -9,8 +9,14 @@ Botão flutuante de acessibilidade para Android. Exibe um botão arrastável sob
 </p>
 
 <p align="center">
-  <a href="https://joaohouto.github.io/assistive/">
-    <img src="https://img.shields.io/badge/Site%20%26%20Guia%20de%20Instala%C3%A7%C3%A3o-→-black?style=for-the-badge" alt="Site & Guia de Instalação" />
+  <a href="https://play.google.com/store/apps/details?id=com.joaohouto.assistivemenutool" target="_blank">
+    <img src="https://img.shields.io/badge/Google_Play-Dispon%C3%ADvel-000000?style=for-the-badge&logo=google-play&logoColor=white" alt="Google Play" />
+  </a>
+  <a href="https://f-droid.org/packages/com.joaohouto.assistivemenutool/" target="_blank">
+    <img src="https://img.shields.io/badge/F--Droid-Dispon%C3%ADvel-1976D2?style=for-the-badge&logo=f-droid&logoColor=white" alt="F-Droid" />
+  </a>
+  <a href="https://joaohouto.github.io/assistive/" target="_blank">
+    <img src="https://img.shields.io/badge/Site%20Oficial-Acessar-black?style=for-the-badge" alt="Site Oficial" />
   </a>
 </p>
 
