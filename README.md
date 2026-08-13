@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="docs/icon.jpg" width="128" height="128" alt="Assistive Menu Tool Icon" style="border-radius: 28px;" />
-</p>
-
 # Assistive Menu Tool
 
 Botão flutuante de acessibilidade para Android. Exibe um botão arrastável sobre qualquer tela que, ao ser tocado, abre um menu com ações rápidas do sistema — similar ao recurso de acessibilidade disponível em outros sistemas operacionais móveis.
@@ -27,18 +23,18 @@ Botão flutuante de acessibilidade para Android. Exibe um botão arrastável sob
 - **Menu expansível** com animação de escala + fade
 - **10 ações disponíveis**, configuráveis pelo usuário:
 
-| Ação | Descrição |
-|---|---|
-| Início | Vai para a tela inicial |
-| Voltar | Equivale ao botão Voltar |
-| Recentes | Abre apps recentes |
-| Bloquear | Bloqueia a tela (Android 9+) |
-| Volume + | Aumenta o volume |
-| Volume − | Diminui o volume |
-| Screenshot | Captura a tela (Android 9+) |
-| Notificações | Abre a gaveta de notificações |
-| Painel Rápido | Abre as configurações rápidas |
-| Configurar | Abre o app para ajustar as opções |
+| Ação          | Descrição                         |
+| ------------- | --------------------------------- |
+| Início        | Vai para a tela inicial           |
+| Voltar        | Equivale ao botão Voltar          |
+| Recentes      | Abre apps recentes                |
+| Bloquear      | Bloqueia a tela (Android 9+)      |
+| Volume +      | Aumenta o volume                  |
+| Volume −      | Diminui o volume                  |
+| Screenshot    | Captura a tela (Android 9+)       |
+| Notificações  | Abre a gaveta de notificações     |
+| Painel Rápido | Abre as configurações rápidas     |
+| Configurar    | Abre o app para ajustar as opções |
 
 - **Configurações persistentes** (SharedPreferences):
   - Opacidade do botão (30 % – 100 %)
@@ -49,12 +45,12 @@ Botão flutuante de acessibilidade para Android. Exibe um botão arrastável sob
 
 ## Requisitos
 
-| Item | Valor |
-|---|---|
-| Android mínimo | 7.0 (API 24) |
-| Android alvo | 15 (API 36) |
-| Kotlin | 2.2.10 |
-| UI | Jetpack Compose + Material 3 |
+| Item           | Valor                        |
+| -------------- | ---------------------------- |
+| Android mínimo | 7.0 (API 24)                 |
+| Android alvo   | 15 (API 36)                  |
+| Kotlin         | 2.2.10                       |
+| UI             | Jetpack Compose + Material 3 |
 
 ---
 
@@ -63,10 +59,12 @@ Botão flutuante de acessibilidade para Android. Exibe um botão arrastável sob
 O app solicita duas permissões especiais que precisam ser concedidas manualmente:
 
 ### 1. Sobreposição de apps (`SYSTEM_ALERT_WINDOW`)
+
 Permite que o botão flutuante apareça sobre outros aplicativos.
 → **Configurações › Apps › Assistive Menu Tool › Aparecer na parte superior**
 
 ### 2. Serviço de acessibilidade (`BIND_ACCESSIBILITY_SERVICE`)
+
 Permite executar ações globais do sistema (Home, Voltar, Recentes, Bloquear, Screenshot).
 → **Configurações › Acessibilidade › Assistive Menu Tool › Ativar**
 
@@ -89,6 +87,7 @@ app/src/main/java/com/joaohouto/assistivemenutool/
 ### Componentes principais
 
 **`FloatingButtonService`**
+
 - Adiciona o botão ao `WindowManager` com `TYPE_APPLICATION_OVERLAY`
 - Gerencia arrastar, soltar e snap animado para a borda
 - Abre/fecha o menu com animação de escala
@@ -96,10 +95,12 @@ app/src/main/java/com/joaohouto/assistivemenutool/
 - Ações de volume via `AudioManager`; Screenshot com delay de 400 ms
 
 **`AssistiveMenuAccessibilityService`**
+
 - Executa `performGlobalAction()` para Home, Voltar, Recentes, Bloquear, Screenshot, Notificações e Painel Rápido
 - Expõe `instance` via companion object para comunicação com o `FloatingButtonService`
 
 **`SettingsRepository`**
+
 - Wrapper de `SharedPreferences` com propriedades tipadas (`opacity`, `buttonSizeDp`, `menuActions`)
 - `menuActions` serializado como CSV de nomes do enum
 
@@ -108,9 +109,11 @@ app/src/main/java/com/joaohouto/assistivemenutool/
 ## Build & Release
 
 ### Debug
+
 Abra o projeto no Android Studio e clique em **Run**.
 
 ### Release
+
 1. Gere um keystore de assinatura:
    ```bash
    keytool -genkey -v -keystore release.jks -alias amt -keyalg RSA -keysize 2048 -validity 10000
