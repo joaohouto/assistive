@@ -17,7 +17,7 @@ Builds:
     commit: v1.3
     subdir: app
     gradle:
-      - assembleRelease
+      - yes
 
 AllowedAPKSigningKeys: 3c349ffe2c4eafcf08a2983f426c1d2ba31ebdcc86094717d431b35c8287f33b
 
