@@ -9,16 +9,19 @@ AutoName: Assistive Menu Tool
 
 RepoType: git
 Repo: https://github.com/joaohouto/assistive
+Binaries: https://github.com/joaohouto/assistive/releases/download/v%v/app-release.apk
 
 Builds:
-  - versionName: '1.2'
-    versionCode: 3
-    commit: v1.2
+  - versionName: '1.3'
+    versionCode: 4
+    commit: v1.3
     subdir: app
     gradle:
       - assembleRelease
 
+AllowedAPKSigningKeys: 3c349ffe2c4eafcf08a2983f426c1d2ba31ebdcc86094717d431b35c8287f33b
+
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: '1.2'
-CurrentVersionCode: 3
+CurrentVersion: '1.3'
+CurrentVersionCode: 4

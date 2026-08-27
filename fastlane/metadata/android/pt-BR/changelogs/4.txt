@@ -1,0 +1,1 @@
+Adicionado diálogo de divulgação prévia para o Serviço de Acessibilidade e configurada assinatura de release.
