@@ -1,0 +1,41 @@
+<resources>
+    <string name="app_name">Assistive Menu Tool</string>
+    <string name="app_subtitle">Botão flutuante de acessibilidade</string>
+    <string name="notification_title">Assistive Menu Tool</string>
+    <string name="notification_text">Toque para acessar ações rápidas</string>
+    <string name="action_stop">Parar</string>
+
+    <string name="action_home">Início</string>
+    <string name="action_back">Voltar</string>
+    <string name="action_recents">Recentes</string>
+    <string name="action_lock">Bloquear</string>
+    <string name="action_volume_up">Volume +</string>
+    <string name="action_volume_down">Volume −</string>
+    <string name="action_screenshot">Screenshot</string>
+    <string name="action_notifications">Notificações</string>
+    <string name="action_quick_settings">Painel Rápido</string>
+    <string name="action_open_app">Configurar</string>
+
+    <string name="permission_overlay">Sobreposição de apps</string>
+    <string name="permission_accessibility">Serviço de acessibilidade</string>
+    <string name="action_activate">Ativar</string>
+    <string name="status_permissions_required">Permissões necessárias</string>
+    <string name="status_active">Ativo</string>
+    <string name="status_inactive">Inativo</string>
+
+    <string name="title_settings">Configurações</string>
+    <string name="label_opacity">Opacidade</string>
+    <string name="label_size">Tamanho</string>
+    <string name="size_small">Pequeno</string>
+    <string name="size_medium">Médio</string>
+    <string name="size_large">Grande</string>
+    <string name="label_menu_actions">Ações do menu</string>
+    <string name="error_select_at_least_one_action">Selecione ao menos uma ação</string>
+
+    <string name="accessibility_disclosure_title">Uso do Serviço de Acessibilidade</string>
+    <string name="accessibility_disclosure_message">O Assistive Menu Tool requer a API AccessibilityService exclusivamente para permitir que você execute ações globais do sistema (como ir para a tela Inicial, Voltar, abrir Apps Recentes, Bloquear Tela, Capturar Tela e Notificações) através do botão flutuante.\n\n• O app NÃO monitora a sua tela.\n• O app NÃO lê ou digita informações.\n• O app NÃO coleta ou compartilha nenhum dado pessoal ou confidencial do usuário.</string>
+    <string name="action_agree_and_continue">Concordar e Continuar</string>
+    <string name="action_cancel">Cancelar</string>
+
+    <string name="accessibility_service_description">Permite ao Assistive Menu Tool executar ações como voltar, home, recentes e bloquear tela</string>
+</resources>

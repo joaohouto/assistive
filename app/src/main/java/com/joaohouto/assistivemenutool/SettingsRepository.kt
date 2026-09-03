@@ -36,7 +36,11 @@ class SettingsRepository(context: Context) {
         const val DEFAULT_OPACITY  = 0.85f
         const val DEFAULT_SIZE_DP  = 56
         val SIZE_OPTIONS = listOf(48, 56, 68)               // dp values
-        val SIZE_LABELS  = listOf("Pequeno", "Médio", "Grande")
+        val SIZE_LABEL_RES = listOf(
+            R.string.size_small,
+            R.string.size_medium,
+            R.string.size_large
+        )
         val DEFAULT_ACTIONS = listOf(
             MenuAction.HOME, MenuAction.BACK,
             MenuAction.RECENTS, MenuAction.LOCK

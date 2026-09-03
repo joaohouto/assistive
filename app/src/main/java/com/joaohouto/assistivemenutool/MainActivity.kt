@@ -128,14 +128,9 @@ private fun MainScreen(
     if (showAccessibilityDisclosure) {
         AlertDialog(
             onDismissRequest = { showAccessibilityDisclosure = false },
-            title = { Text("Uso do Serviço de Acessibilidade") },
+            title = { Text(stringResource(R.string.accessibility_disclosure_title)) },
             text = {
-                Text(
-                    "O Assistive Menu Tool requer a API AccessibilityService exclusivamente para permitir que você execute ações globais do sistema (como ir para a tela Inicial, Voltar, abrir Apps Recentes, Bloquear Tela, Capturar Tela e Notificações) através do botão flutuante.\n\n" +
-                    "• O app NÃO monitora a sua tela.\n" +
-                    "• O app NÃO lê ou digita informações.\n" +
-                    "• O app NÃO coleta ou compartilha nenhum dado pessoal ou confidencial do usuário."
-                )
+                Text(stringResource(R.string.accessibility_disclosure_message))
             },
             confirmButton = {
                 TextButton(
@@ -144,12 +139,12 @@ private fun MainScreen(
                         openAccessibilitySettings()
                     }
                 ) {
-                    Text("Concordar e Continuar")
+                    Text(stringResource(R.string.action_agree_and_continue))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showAccessibilityDisclosure = false }) {
-                    Text("Cancelar")
+                    Text(stringResource(R.string.action_cancel))
                 }
             }
         )
@@ -166,10 +161,10 @@ private fun MainScreen(
         ) {
             Spacer(Modifier.height(32.dp))
 
-            Text("Assistive Menu Tool", style = MaterialTheme.typography.headlineMedium)
+            Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineMedium)
             Spacer(Modifier.height(4.dp))
             Text(
-                "Botão flutuante de acessibilidade",
+                stringResource(R.string.app_subtitle),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -178,13 +173,13 @@ private fun MainScreen(
 
             // ── Permissions ──────────────────────────────────────────────
             PermissionRow(
-                label = "Sobreposição de apps",
+                label = stringResource(R.string.permission_overlay),
                 granted = overlayGranted,
                 onRequest = requestOverlayPermission
             )
             Spacer(Modifier.height(8.dp))
             PermissionRow(
-                label = "Serviço de acessibilidade",
+                label = stringResource(R.string.permission_accessibility),
                 granted = accessibilityEnabled,
                 onRequest = { showAccessibilityDisclosure = true }
             )
@@ -201,13 +196,13 @@ private fun MainScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Column {
-                        Text("Assistive Menu Tool", style = MaterialTheme.typography.titleMedium)
+                        Text(stringResource(R.string.app_name), style = MaterialTheme.typography.titleMedium)
                         Spacer(Modifier.size(2.dp))
                         Text(
                             text = when {
-                                !allGranted    -> "Permissões necessárias"
-                                serviceRunning -> "Ativo"
-                                else           -> "Inativo"
+                                !allGranted    -> stringResource(R.string.status_permissions_required)
+                                serviceRunning -> stringResource(R.string.status_active)
+                                else           -> stringResource(R.string.status_inactive)
                             },
                             style = MaterialTheme.typography.bodySmall,
                             color = when {
@@ -245,7 +240,7 @@ private fun SettingsSection(settings: SettingsRepository) {
 
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Configurações", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.title_settings), style = MaterialTheme.typography.titleMedium)
 
             Spacer(Modifier.height(16.dp))
             HorizontalDivider()
@@ -257,7 +252,7 @@ private fun SettingsSection(settings: SettingsRepository) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Opacidade", style = MaterialTheme.typography.bodyMedium)
+                Text(stringResource(R.string.label_opacity), style = MaterialTheme.typography.bodyMedium)
                 Text(
                     "${(opacity * 100).toInt()}%",
                     style = MaterialTheme.typography.bodySmall,
@@ -275,7 +270,7 @@ private fun SettingsSection(settings: SettingsRepository) {
             Spacer(Modifier.height(12.dp))
 
             // Size
-            Text("Tamanho", style = MaterialTheme.typography.bodyMedium)
+            Text(stringResource(R.string.label_size), style = MaterialTheme.typography.bodyMedium)
             Spacer(Modifier.height(8.dp))
             SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
                 SettingsRepository.SIZE_OPTIONS.forEachIndexed { index, dp ->
@@ -290,7 +285,7 @@ private fun SettingsSection(settings: SettingsRepository) {
                         },
                         selected = sizeDp == dp
                     ) {
-                        Text(SettingsRepository.SIZE_LABELS[index])
+                        Text(stringResource(SettingsRepository.SIZE_LABEL_RES[index]))
                     }
                 }
             }
@@ -300,7 +295,7 @@ private fun SettingsSection(settings: SettingsRepository) {
             Spacer(Modifier.height(12.dp))
 
             // Actions
-            Text("Ações do menu", style = MaterialTheme.typography.bodyMedium)
+            Text(stringResource(R.string.label_menu_actions), style = MaterialTheme.typography.bodyMedium)
             Spacer(Modifier.height(4.dp))
 
             MenuAction.entries.forEach { action ->
@@ -326,7 +321,7 @@ private fun SettingsSection(settings: SettingsRepository) {
 
             AnimatedVisibility(visible = actions.isEmpty()) {
                 Text(
-                    "Selecione ao menos uma ação",
+                    stringResource(R.string.error_select_at_least_one_action),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.padding(top = 4.dp)
@@ -378,7 +373,7 @@ private fun PermissionRow(label: String, granted: Boolean, onRequest: () -> Unit
                         horizontal = 12.dp, vertical = 0.dp
                     )
                 ) {
-                    Text("Ativar", style = MaterialTheme.typography.labelSmall)
+                    Text(stringResource(R.string.action_activate), style = MaterialTheme.typography.labelSmall)
                 }
             }
         }

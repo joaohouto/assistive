@@ -1,17 +1,41 @@
 <resources>
     <string name="app_name">Assistive Menu Tool</string>
+    <string name="app_subtitle">Floating accessibility button</string>
     <string name="notification_title">Assistive Menu Tool</string>
-    <string name="notification_text">Toque para acessar ações rápidas</string>
-    <string name="action_stop">Parar</string>
-    <string name="action_home">Início</string>
-    <string name="action_back">Voltar</string>
-    <string name="action_recents">Recentes</string>
-    <string name="action_lock">Bloquear</string>
+    <string name="notification_text">Tap to access quick actions</string>
+    <string name="action_stop">Stop</string>
+
+    <string name="action_home">Home</string>
+    <string name="action_back">Back</string>
+    <string name="action_recents">Recents</string>
+    <string name="action_lock">Lock</string>
     <string name="action_volume_up">Volume +</string>
     <string name="action_volume_down">Volume −</string>
     <string name="action_screenshot">Screenshot</string>
-    <string name="action_notifications">Notificações</string>
-    <string name="action_quick_settings">Painel Rápido</string>
-    <string name="action_open_app">Configurar</string>
-    <string name="accessibility_service_description">Permite ao Assistive Menu Tool executar ações como voltar, home, recentes e bloquear tela</string>
+    <string name="action_notifications">Notifications</string>
+    <string name="action_quick_settings">Quick Settings</string>
+    <string name="action_open_app">Settings</string>
+
+    <string name="permission_overlay">Display over other apps</string>
+    <string name="permission_accessibility">Accessibility service</string>
+    <string name="action_activate">Enable</string>
+    <string name="status_permissions_required">Permissions required</string>
+    <string name="status_active">Active</string>
+    <string name="status_inactive">Inactive</string>
+
+    <string name="title_settings">Settings</string>
+    <string name="label_opacity">Opacity</string>
+    <string name="label_size">Size</string>
+    <string name="size_small">Small</string>
+    <string name="size_medium">Medium</string>
+    <string name="size_large">Large</string>
+    <string name="label_menu_actions">Menu actions</string>
+    <string name="error_select_at_least_one_action">Select at least one action</string>
+
+    <string name="accessibility_disclosure_title">Accessibility Service Usage</string>
+    <string name="accessibility_disclosure_message">Assistive Menu Tool requires the AccessibilityService API exclusively to allow you to perform global system actions (such as Home, Back, Recent Apps, Lock Screen, Take Screenshot, and Notifications) via the floating button.\n\n• The app does NOT monitor your screen.\n• The app does NOT read or type information for you.\n• The app does NOT collect or share any personal or sensitive user data.</string>
+    <string name="action_agree_and_continue">Agree and Continue</string>
+    <string name="action_cancel">Cancel</string>
+
+    <string name="accessibility_service_description">Allows Assistive Menu Tool to perform actions like back, home, recents, and screen lock</string>
 </resources>
